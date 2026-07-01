@@ -1,0 +1,6 @@
+interface:
+  display_name: "Gpt4free"
+  short_description: "Repo-specific patterns and workflows for gpt4free"
+  default_prompt: "Use the gpt4free repo skill to follow existing architecture, testing, and workflow conventions."
+policy:
+  allow_implicit_invocation: true
