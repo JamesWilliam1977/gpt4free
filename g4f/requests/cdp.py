@@ -783,7 +783,7 @@ class CDPSession:
 
     async def capture_screenshot(self, url: str, n: int = 3) -> AsyncIterator[str]:
         """Navigate to a URL and capture a screenshot, caching the result."""
-        url_without_suffix = url[:-6] if url.endswith("_2.jpg") or url.endswith("_3.jpg") else url
+        url_without_suffix = url[:-7] if url.endswith("_2.webp") or url.endswith("_3.webp") else url
         url_with_noads = f"{url_without_suffix}&noads={int(time.time())}" if "?" in url_without_suffix else f"{url_without_suffix}?noads={int(time.time())}"
         await self.navigate(url_with_noads)
 
@@ -802,11 +802,11 @@ class CDPSession:
         return result
     
     async def _capture_screenshot_impl(self, url: str, n: int) -> str:
-        url_without_suffix = url[:-6] if url.endswith("_2.jpg") or url.endswith("_3.jpg") else url
+        url_without_suffix = url[:-7] if url.endswith("_2.webp") or url.endswith("_3.webp") else url
         datekey = datetime.date.today().isoformat()
         screenshot_dir = get_screenshot_dir(datekey)
         # Use original URL for filename to distinguish between similar URLs
-        filepath = os.path.join(screenshot_dir, f"{secure_filename(url_without_suffix.replace('https://', '').replace('http://', '').replace('www.', ''))}{'.jpg' if n == 1 else f'_{n}.jpg'}")
+        filepath = os.path.join(screenshot_dir, f"{secure_filename(url_without_suffix.replace('https://', '').replace('http://', '').replace('www.', ''))}{'.webp' if n == 1 else f'_{n}.webp'}")
         if os.path.exists(filepath):
             debug.log(f"Screenshot already exists: {filepath}")
             return filepath
@@ -824,17 +824,17 @@ class CDPSession:
         await self.wait_for_network_idle(idle_time=5, timeout=15.0)
         result = await self.call("Page.captureScreenshot")
         image_bytes = base64.b64decode(result["data"])
-        
-        # Resize to 1200x630 and save as JPEG to reduce file size
+
+        # Resize to 1200x630 and save as WebP to reduce file size
         if has_pillow:
             from io import BytesIO
             image = Image.open(BytesIO(image_bytes))
             image = image.resize((1200, 630), Image.Resampling.LANCZOS)
             width, height = image.size
             image = image.crop((0, 0, max(0, width - 14), height))
-            image = image.convert("RGB")  # JPEG does not support alpha channel
+            image = image.convert("RGB")
             output = BytesIO()
-            image.save(output, format="JPEG", quality=85, optimize=True)
+            image.save(output, format="WEBP", quality=85, method=6)
             image_bytes = output.getvalue()
 
         # Try to click any "Accept" or "Einwilligen" cookie consent buttons
@@ -1152,7 +1152,7 @@ class SyncCDPSession:
         """Navigate to a URL and capture a screenshot, caching the result."""
         datekey = datetime.date.today().isoformat()
         screenshots_dir = get_screenshot_dir(datekey)
-        filename = f"{secure_filename(url)}.jpg"
+        filename = f"{secure_filename(url)}.webp"
         filepath = os.path.join(screenshots_dir, filename)
 
         if os.path.exists(filepath):
@@ -1167,16 +1167,16 @@ class SyncCDPSession:
         result = self.call("Page.captureScreenshot")
         image_bytes = base64.b64decode(result["data"])
         
-        # Resize to 1200x675 and save as JPEG to reduce file size
+        # Resize to 1200x675 and save as WebP to reduce file size
         if has_pillow:
             from io import BytesIO
             image = Image.open(BytesIO(image_bytes))
             image = image.resize((1200, 675), Image.Resampling.LANCZOS)
             width, height = image.size
             image = image.crop((0, 0, max(0, width - 10), height))
-            image = image.convert("RGB")  # JPEG does not support alpha channel
+            image = image.convert("RGB")
             output = BytesIO()
-            image.save(output, format="JPEG", quality=85, optimize=True)
+            image.save(output, format="WEBP", quality=85, method=6)
             image_bytes = output.getvalue()
         
         Path(filepath).write_bytes(image_bytes)

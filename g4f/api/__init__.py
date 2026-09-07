@@ -1325,11 +1325,10 @@ class Api:
                     await session.start()
                     try:
                         screenshot_path = await session.capture_screenshot(url)
-                        print(f"Screenshot saved to: {screenshot_path}")
                         return FileResponse(
                             screenshot_path,
-                            media_type="image/jpeg",
-                            #headers={"Cache-Control": "max-age=8600"},
+                            media_type="image/webp",
+                            headers={"Cache-Control": "max-age=604800"},
                         )
                     finally:
                         await session.close()
