@@ -258,7 +258,7 @@ class ProviderLoader:
 
             return GlhfChat
         elif name == "GoogleAiMode":
-            from g4f.Provider.needs_auth.GoogleAiMode import GoogleAiMode
+            from g4f.Provider.search.GoogleAiMode import GoogleAiMode
 
             return GoogleAiMode
         elif name == "GoogleSearch":

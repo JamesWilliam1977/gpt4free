@@ -330,10 +330,39 @@ class Website:
             <p class="screenshot-caption">Load screenshot from {escape(p['url'] or 'N/A')}</p>
         </div>
         <script>
+            // Get provider logo (same as docs page)
+            function getImage(key) {{
+                key = key || "";
+                const img = new Image(200, 200);
+                const gen = 'https://g4f.space';
+                img.src = gen + '/logo/' +
+                    key.replace(
+                        'MetaAIAccount', 'Facebook AI').replace(
+                        'MetaAI', 'Facebook AI').replace(
+                        'Aria', '').replace(
+                        'OpenAI', 'ChatGPT').replace(
+                        'Video', 'TV').replace(
+                        'Phi-4', 'Windows').replace(
+                        '(Text Generation)', '').replace(
+                        'Glhf', 'AI').replace(
+                        'GithubCopilot', 'GitHub Copilot').replace(
+                        'PerplexityApi', 'Perplexity API').replace(
+                        'Gemini', '').replace(
+                        'API', '').replace(
+                        '-2.5M', '').replace(
+                        'grok', 'xAI').replace(
+                        'Qwen_Qwen_3', 'Qwen').replace(
+                        'Yupp', 'with yupp').replace(
+                        'groq', 'Groq');
+                return img;
+            }}
             const img = document.querySelector('img[data-src="{logo_url}"]');
+            const previewImg = getImage("{p['name']}")
+            img.parentElement.appendChild(previewImg);
             let n = 1;
             const orgSrc = img.dataset.src;
             img.onload = () => {{
+                img.parentElement.removeChild(previewImg);
                 n =  n + 1;
                 if (n <= 3) {{
                     setTimeout(() => {{

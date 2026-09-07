@@ -578,7 +578,7 @@ class Gemini(AsyncGeneratorProvider, ProviderModelMixin):
                 except (ClientError, ResponseError, ValueError) as error:
                     cls._account_models_fetched_at = time.time()
                     debug.log(f"Gemini model discovery failed: {error}")
-        return {key: value for key, value in cls._account_models.items() if value.get("available")}
+        return {key: value for key, value in cls._account_models.items()}
 
     @classmethod
     async def create_async_generator(
@@ -768,6 +768,7 @@ class Gemini(AsyncGeneratorProvider, ProviderModelMixin):
             response = None
             for attempt in range(max_retries + 1):
                 try:
+                    print(f"Attempt {attempt + 1} for Gemini request to model {model}")
                     response = await session.post(
                         f"{cls.url}{prefix}{REQUEST_PATH}",
                         data=data,
@@ -837,6 +838,7 @@ class Gemini(AsyncGeneratorProvider, ProviderModelMixin):
                     response.content, stream_timeout
                 ):
                     line_text = line_text.strip()
+                    print(f"Received line: {line_text}")
                     error_buffer = (error_buffer + line_text)[-4096:]
                     error_match = BARD_ERROR_PATTERN.search(error_buffer)
                     if error_match:
