@@ -45,17 +45,15 @@ class GoogleAiMode(GoogleSearch):
             search_results = await cls._read_search_results(session)
             if search_results:
                 yield search_results
-            yield "\n\n---\n\n"
+                yield "\n\n---\n\n"
         except Exception as e:
             debug.log(f"Google Search: Error reading search results: {e}")
             await session.close()
             raise e
 
-        # Enable AI mode if model is ai-mode
         try:
-            for _ in range(10):
+            for _ in range(5):
                 result = await session.evaluate_js("""const b =Array.from(document.querySelectorAll("a, button")).filter(a=>a.textContent.endsWith("KI‑Modus") || a.textContent.endsWith("AI-Mode")).pop(); b ? b.click() : null; !!b""")
-                debug.log(f"Google Search: Attempted #{_+1} to enable AI mode, result: {result}")
                 await asyncio.sleep(1)
                 if not result:
                     continue
@@ -108,7 +106,7 @@ for (let l of lines) {
         // Dekodiere Hex-Escapes wie \x3d (=) am Ende des Base64-Strings
         const base64Data = imgMatch[2].replace(/\\x([0-9a-fA-F]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16)));
         // Ersetze nur den _setImageSrc-Aufruf, behalte umgebenden Text
-        l = l.replace(imgMatch[0], `\n![Bild](${base64Data})`);
+        l = l.replace(imgMatch[0], ''); // `\n![Bild](${base64Data})`);
     }
 
     // Behebt den fehlerhaften Regex für die Datei-Metadaten am Zeilenende

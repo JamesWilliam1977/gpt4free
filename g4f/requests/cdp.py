@@ -836,15 +836,6 @@ class CDPSession:
             output = BytesIO()
             image.save(output, format="WEBP", quality=85, method=6)
             image_bytes = output.getvalue()
-
-        # Try to click any "Accept" or "Einwilligen" cookie consent buttons
-        for _ in range(5):
-            debug.log("Attempting to click accept button...")
-            await asyncio.sleep(1)
-            if await self.click_accept_button():
-                debug.log("Clicked accept button.")
-                await asyncio.sleep(1)
-                break
         
         Path(filepath).write_bytes(image_bytes)
         return filepath

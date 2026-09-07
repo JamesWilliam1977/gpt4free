@@ -360,13 +360,17 @@ class Website:
             const previewImg = getImage("{p['name']}")
             img.parentElement.appendChild(previewImg);
             let n = 1;
+            let previewRemoved = false;
             const orgSrc = img.dataset.src;
             img.onload = () => {{
-                img.parentElement.removeChild(previewImg);
-                n =  n + 1;
+                if (!previewRemoved && previewImg.parentNode) {{
+                    previewImg.parentNode.removeChild(previewImg);
+                    previewRemoved = true;
+                }}
+                n = n + 1;
                 if (n <= 3) {{
                     setTimeout(() => {{
-                        img.src = orgSrc + `_${{n}}.jpg`;
+                        img.src = orgSrc + `_${{n}}.webp`;
                     }}, 1000);
                 }}
             }};
@@ -375,7 +379,7 @@ class Website:
                     img.src = 'https://image.thum.io/get/width/600/{logo_url}';
                     return;
                 }}
-                if (imgs.src == orgSrc) return;
+                if (img.src == orgSrc) return;
                 n = 3; // Stop carousel on error
                 img.src = orgSrc;
             }};
